@@ -7,6 +7,4 @@ target_link_libraries(run_tests PRIVATE
     Catch2::Catch2WithMain
 )
 
-target_include_directories(run_tests PRIVATE
-    "${PROJECT_SOURCE_DIR}/include"
-)
+set_target_properties(run_tests PROPERTIES FOLDER "Tests")
