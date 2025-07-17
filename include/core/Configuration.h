@@ -5,7 +5,7 @@
 #include <string>
 #include <thread>
 
-namespace arora {
+namespace aurora {
 namespace core {
 
 /**
@@ -84,4 +84,4 @@ private:
 };
 
 } // namespace core
-} // namespace arora
+} // namespace aurora

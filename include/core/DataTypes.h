@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace arora {
+namespace aurora {
 namespace core {
 
 /**
@@ -123,4 +123,4 @@ struct BookSnapshot {
 };
 
 } // namespace core
-} // namespace arora
+} // namespace aurora

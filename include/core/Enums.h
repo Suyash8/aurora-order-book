@@ -1,6 +1,6 @@
 #pragma once
 
-namespace arora {
+namespace aurora {
 namespace core {
 
 /**
@@ -51,4 +51,4 @@ enum class OrderStatus {
 };
 
 } // namespace core
-} // namespace arora
+} // namespace aurora

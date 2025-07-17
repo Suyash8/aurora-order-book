@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-using arora::core::Configuration;
+using aurora::core::Configuration;
 
 Configuration &Configuration::instance() {
   static Configuration instance;

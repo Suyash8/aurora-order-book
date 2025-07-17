@@ -2,7 +2,7 @@
 
 #include "DataTypes.h"
 
-namespace arora {
+namespace aurora {
 namespace core {
 
 /**
@@ -40,4 +40,4 @@ public:
 };
 
 } // namespace core
-} // namespace arora
+} // namespace aurora

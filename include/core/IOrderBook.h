@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace arora {
+namespace aurora {
 namespace core {
 
 /**
@@ -74,8 +74,10 @@ public:
    * @return BookSnapshot containing all current bid and ask price levels
    *         with their associated orders and aggregate information
    *
-   * @note The snapshot should be consistent and represent a single point in time
-   * @note Price levels should be sorted appropriately (bids descending, asks ascending)
+   * @note The snapshot should be consistent and represent a single point in
+   * time
+   * @note Price levels should be sorted appropriately (bids descending, asks
+   * ascending)
    */
   virtual BookSnapshot get_snapshot() const = 0;
 
@@ -86,4 +88,4 @@ public:
 };
 
 } // namespace core
-} // namespace arora
+} // namespace aurora
