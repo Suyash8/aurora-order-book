@@ -1,5 +1,8 @@
 #pragma once
 
+namespace arora {
+namespace core {
+
 /**
  * @brief Enum class for order types
  *
@@ -46,3 +49,6 @@ enum class OrderStatus {
   /** @brief The order was rejected due to some error or condition. */
   REJECTED
 };
+
+} // namespace core
+} // namespace arora

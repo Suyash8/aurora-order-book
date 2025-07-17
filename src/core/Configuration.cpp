@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+using arora::core::Configuration;
+
 Configuration &Configuration::instance() {
   static Configuration instance;
   return instance;

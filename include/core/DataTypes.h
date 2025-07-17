@@ -7,6 +7,9 @@
 #include <string>
 #include <vector>
 
+namespace arora {
+namespace core {
+
 /**
  * @brief Represents an order in the trading system
  *
@@ -118,3 +121,6 @@ struct BookSnapshot {
    * order by price */
   std::vector<PriceLevel> asks;
 };
+
+} // namespace core
+} // namespace arora

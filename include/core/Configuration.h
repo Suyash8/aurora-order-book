@@ -4,6 +4,9 @@
 #include <cstdint>
 #include <thread>
 
+namespace arora {
+namespace core {
+
 /**
  * @brief Singleton class to manage configuration settings.
  *
@@ -78,3 +81,6 @@ private:
   /** @brief Path to the configuration file. */
   std::string config_file_;
 };
+
+} // namespace core
+} // namespace arora
