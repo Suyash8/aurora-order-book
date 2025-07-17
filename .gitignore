@@ -1,0 +1,21 @@
+# Build directory
+build/
+
+# IDE files
+.idea/
+.vscode/
+
+# Compiled files
+*.o
+*.a
+*.so
+
+# Profiling data
+*.prof
+
+# CMake files
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+.cache/

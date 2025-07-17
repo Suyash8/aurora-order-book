@@ -7,15 +7,15 @@
   - Set up CMake build system with proper dependencies
   - _Requirements: All sections_
 
-- [ ] 2. Implement core data structures
+- [x] 2. Implement core data structures
 
-  - [ ] 2.1 Create Order structure and related enums
+  - [x] 2.1 Create Order structure and related enums
 
     - Implement Order, OrderType, Side, and OrderStatus classes/enums
     - Add timestamp and unique identifier support
     - _Requirements: 2.1, 2.2_
 
-  - [ ] 2.2 Implement Trade and MarketStats structures
+  - [x] 2.2 Implement Trade and MarketStats structures
     - Create data structures for trade records
     - Implement market statistics tracking
     - _Requirements: 2.6, 6.1, 6.5_
