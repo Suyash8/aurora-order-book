@@ -1,5 +1,10 @@
+add_subdirectory(core)
+
 add_executable(aurora
     main.cpp
+)
+
+target_link_libraries(aurora PRIVATE aurora_core
 )
 
 target_include_directories(aurora PRIVATE
