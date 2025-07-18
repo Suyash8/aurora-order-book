@@ -1,86 +1,114 @@
 #pragma once
 
-#include <cstddef>
 #include <cstdint>
 #include <string>
-#include <thread>
+#include <vector>
 
 namespace aurora {
 namespace core {
 
 /**
- * @brief Singleton class to manage configuration settings.
+ * @brief Configuration management for the Aurora LOB system
  *
- * Provides methods to load configuration from a file or command line arguments,
- * and access various configuration parameters such as port, thread counts, and
- * persistence settings.
+ * This class implements a singleton pattern for global access to configuration
+ * settings. It supports loading from JSON/YAML files and command-line
+ * arguments.
  */
 class Configuration {
 public:
   /**
-   * @brief Get the singleton instance of the Configuration class.
+   * @brief Get the singleton instance of the Configuration class
    *
-   * @return Configuration& Reference to the singleton instance.
+   * @return Reference to the singleton Configuration instance
    */
   static Configuration &instance();
+
   /**
-   * @brief Load configuration from a file.
+   * @brief Load configuration from a file
    *
-   * Reads configuration settings from the specified file and updates the
-   * internal state of the Configuration instance.
-   *
-   * @param filename Path to the configuration file.
+   * @param filename Path to the configuration file (JSON or YAML)
+   * @throws std::runtime_error if the file cannot be loaded or parsed
    */
   void load_from_file(const std::string &filename);
+
   /**
-   * @brief Load configuration from command line arguments.
+   * @brief Load configuration from command-line arguments
    *
-   * Parses command line arguments to set configuration parameters such as port,
-   * thread counts, and persistence settings.
-   *
-   * @param argc Argument count.
-   * @param argv Argument vector.
+   * @param argc Argument count from main
+   * @param argv Argument values from main
    */
   void load_from_args(int argc, char *argv[]);
 
   /**
-   * @brief Get the port number for the application.
+   * @brief Get the TCP server port
    *
-   * @return uint16_t Port number.
+   * @return The configured port number
    */
-  uint16_t get_port() const;
+  uint16_t get_port() const { return port_; }
+
   /**
-   * @brief Get the number of I/O threads.
+   * @brief Get the number of I/O threads
    *
-   * @return size_t Number of I/O threads.
+   * @return The configured number of I/O threads
    */
-  size_t get_io_threads() const;
+  size_t get_io_threads() const { return io_threads_; }
+
   /**
-   * @brief Get the number of worker threads.
+   * @brief Get the number of worker threads
    *
-   * @return size_t Number of worker threads.
+   * @return The configured number of worker threads
    */
-  size_t get_worker_threads() const;
+  size_t get_worker_threads() const { return worker_threads_; }
+
   /**
-   * @brief Check if persistence is enabled.
+   * @brief Check if persistence is enabled
    *
-   * @return bool True if persistence is enabled, false otherwise.
+   * @return True if persistence is enabled, false otherwise
    */
-  bool is_persistence_enabled() const;
+  bool is_persistence_enabled() const { return enable_persistence_; }
+
+  /**
+   * @brief Get the list of configured instruments
+   *
+   * @return Vector of instrument IDs
+   */
+  const std::vector<std::string> &get_instruments() const {
+    return instruments_;
+  }
 
 private:
-  Configuration() = default;
+  /**
+   * @brief Private constructor for singleton pattern
+   */
+  Configuration();
 
-  /** @brief Port number for the application. */
+  /**
+   * @brief Deleted copy constructor
+   */
+  Configuration(const Configuration &) = delete;
+
+  /**
+   * @brief Deleted assignment operator
+   */
+  Configuration &operator=(const Configuration &) = delete;
+
+  /** @brief TCP server port number for client connections */
   uint16_t port_ = 8080;
-  /** @brief Number of I/O threads for handling network operations. */
+
+  /** @brief Number of I/O threads for handling network operations */
   size_t io_threads_ = 4;
-  /** @brief Number of worker threads for processing orders. */
-  size_t worker_threads_ = std::thread::hardware_concurrency();
-  /** @brief Flag indicating whether persistence is enabled. */
-  bool persistence_enabled_ = false;
-  /** @brief Path to the configuration file. */
+
+  /** @brief Number of worker threads for processing orders and trades */
+  size_t worker_threads_ = 0; // Default to hardware concurrency in constructor
+
+  /** @brief Flag indicating whether state persistence is enabled */
+  bool enable_persistence_ = false;
+
+  /** @brief Path to the configuration file that was loaded, if any */
   std::string config_file_;
+
+  /** @brief List of financial instruments supported by the system */
+  std::vector<std::string> instruments_;
 };
 
 } // namespace core
