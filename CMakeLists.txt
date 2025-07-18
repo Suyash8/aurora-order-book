@@ -11,6 +11,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# --- Dependency Management with FetchContent ---
 include(FetchContent)
 
 FetchContent_Declare(
@@ -36,11 +37,7 @@ FetchContent_Declare(
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Disable building Google Benchmark's tests")
 FetchContent_MakeAvailable(googlebenchmark)
 
-# find_package(gperftools)
-# if(NOT gperftools_FOUND)
-#     message(FATAL_ERROR "gperftools not found. Please install it system-wide (e.g., 'sudo apt-get install libgoogle-perftools-dev').")
-# endif()
-
+# --- System Dependency Checks ---
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GPERFTOOLS REQUIRED IMPORTED_TARGET libprofiler)
 
@@ -49,8 +46,25 @@ if(NOT Boost_FOUND)
     message(FATAL_ERROR "Boost not found. Please install Boost 1.74.0 or higher.")
 endif()
 
+add_subdirectory(src)
+
+add_executable(aurora
+    src/main.cpp
+)
+
+target_link_libraries(aurora PRIVATE
+    aurora_interface
+)
+
+target_link_libraries(aurora PRIVATE
+    aurora_core
+    aurora_network
+    aurora_processing
+    # aurora_storage
+    # aurora_utils
+)
+
+set_target_properties(aurora PROPERTIES FOLDER "Executables")
 
 enable_testing()
-
-add_subdirectory(src)
 add_subdirectory(tests)

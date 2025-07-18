@@ -1,23 +1,17 @@
-add_subdirectory(core)
-
-target_link_libraries(aurora_core PUBLIC
-    nlohmann_json::nlohmann_json
-    Boost::system
-    Boost::thread
-    PkgConfig::GPERFTOOLS
-)
-
-add_executable(aurora
-    main.cpp
-)
-
-target_include_directories(aurora PRIVATE
+add_library(aurora_interface INTERFACE)
+target_include_directories(aurora_interface INTERFACE
     "${PROJECT_SOURCE_DIR}/include"
 )
 
-target_link_libraries(aurora PRIVATE
-    aurora_core
+target_link_libraries(aurora_interface INTERFACE
+    Boost::system
+    Boost::thread
+    nlohmann_json::nlohmann_json
+    PkgConfig::GPERFTOOLS
 )
 
-set_target_properties(aurora_core PROPERTIES FOLDER "Source")
-set_target_properties(aurora PROPERTIES FOLDER "Executables")
+add_subdirectory(core)
+add_subdirectory(network)
+add_subdirectory(processing)
+# add_subdirectory(storage)
+# add_subdirectory(utils)
