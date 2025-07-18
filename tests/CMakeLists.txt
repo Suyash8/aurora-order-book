@@ -3,10 +3,12 @@ add_executable(run_tests
 )
 
 target_link_libraries(run_tests PRIVATE
-    aurora_core
     Catch2::Catch2WithMain
+    aurora_interface
+    aurora_core
 )
 
-target_include_directories(run_tests PRIVATE
-    "${PROJECT_SOURCE_DIR}/include"
-)
+include(CTest)
+add_test(NAME UnitTests COMMAND run_tests)
+
+set_target_properties(run_tests PROPERTIES FOLDER "Tests")

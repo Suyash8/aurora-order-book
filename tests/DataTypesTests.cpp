@@ -1,11 +1,11 @@
-#include "DataTypes.h"
+#include "core/DataTypes.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <chrono>
 
-using arora::core::Order;
-using arora::core::OrderType;
-using arora::core::Side;
+using aurora::core::Order;
+using aurora::core::OrderType;
+using aurora::core::Side;
 
 TEST_CASE("Order struct initialization") {
   Order order;

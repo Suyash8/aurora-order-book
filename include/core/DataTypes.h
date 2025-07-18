@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace arora {
+namespace aurora {
 namespace core {
 
 /**
@@ -122,5 +122,28 @@ struct BookSnapshot {
   std::vector<PriceLevel> asks;
 };
 
+/**
+ * @brief Represents a response to an order submission or modification
+ *
+ * Contains information about the processing outcome of an order, including
+ * its status, execution details, and any relevant messages. Used for
+ * communicating order execution results back to clients.
+ */
+struct Response {
+  /** @brief Unique identifier for the order this response relates to */
+  uint64_t order_id;
+  /** @brief Current status of the order (PENDING, ACCEPTED, PARTIAL_FILL, etc.)
+   */
+  OrderStatus status;
+  /** @brief Quantity of the order that has been executed */
+  uint64_t filled_quantity = 0;
+  /** @brief Quantity of the order that is still pending execution */
+  uint64_t remaining_quantity = 0;
+  /** @brief Price at which the order was executed, if applicable */
+  double fill_price = 0.0;
+  /** @brief Additional information or explanation about the order processing */
+  std::string message;
+};
+
 } // namespace core
-} // namespace arora
+} // namespace aurora

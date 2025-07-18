@@ -1,16 +1,17 @@
-add_subdirectory(core)
-
-add_executable(aurora
-    main.cpp
-)
-
-target_link_libraries(aurora PRIVATE aurora_core
-)
-
-target_include_directories(aurora PRIVATE
+add_library(aurora_interface INTERFACE)
+target_include_directories(aurora_interface INTERFACE
     "${PROJECT_SOURCE_DIR}/include"
 )
 
-install(TARGETS aurora
-    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+target_link_libraries(aurora_interface INTERFACE
+    Boost::system
+    Boost::thread
+    nlohmann_json::nlohmann_json
+    PkgConfig::GPERFTOOLS
 )
+
+add_subdirectory(core)
+add_subdirectory(network)
+add_subdirectory(processing)
+# add_subdirectory(storage)
+# add_subdirectory(utils)
