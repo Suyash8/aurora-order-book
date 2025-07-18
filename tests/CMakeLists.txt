@@ -1,5 +1,6 @@
 add_executable(run_tests
     DataTypesTests.cpp
+    ConfigurationTests.cpp
 )
 
 target_link_libraries(run_tests PRIVATE

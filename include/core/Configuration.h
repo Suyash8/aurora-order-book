@@ -92,6 +92,32 @@ private:
    */
   Configuration &operator=(const Configuration &) = delete;
 
+  /**
+   * @brief Load configuration from a JSON file
+   *
+   * Parses the specified JSON file and updates configuration settings
+   * based on its contents. Supports all configurable parameters including
+   * network settings, threading options, and instrument definitions.
+   *
+   * @param filename Path to the JSON configuration file
+   * @throws std::runtime_error if the file cannot be read or contains invalid
+   * JSON
+   */
+  void load_from_json(const std::string &filename);
+
+  /**
+   * @brief Load configuration from a YAML file
+   *
+   * Parses the specified YAML file and updates configuration settings
+   * based on its contents. Supports all configurable parameters including
+   * network settings, threading options, and instrument definitions.
+   *
+   * @param filename Path to the YAML configuration file
+   * @throws std::runtime_error if the file cannot be read or contains invalid
+   * YAML
+   */
+  void load_from_yaml(const std::string &filename);
+
   /** @brief TCP server port number for client connections */
   uint16_t port_ = 8080;
 

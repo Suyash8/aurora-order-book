@@ -7,6 +7,7 @@ target_include_directories(aurora_interface INTERFACE
 target_link_libraries(aurora_interface INTERFACE
     Boost::system
     Boost::thread
+    yaml-cpp::yaml-cpp
     PkgConfig::GPERFTOOLS
 )
 
