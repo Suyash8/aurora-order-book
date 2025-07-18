@@ -1,0 +1,31 @@
+{
+  "network": {
+    "port": 8080,
+    "io_threads": 4,
+    "max_connections": 1000
+  },
+  "processing": {
+    "worker_threads": 8,
+    "queue_size": 10000
+  },
+  "profiling": {
+    "enabled": true,
+    "cpu_profiling": true,
+    "memory_profiling": false,
+    "latency_tracking": true
+  },
+  "persistence": {
+    "enabled": false,
+    "snapshot_interval_seconds": 300,
+    "snapshot_directory": "./snapshots"
+  },
+  "instruments": ["AAPL", "GOOGL", "MSFT", "TSLA"],
+  "replay": {
+    "data_file": "",
+    "time_scale": 1.0
+  },
+  "multi_instrument": {
+    "enabled": true,
+    "default_single_book": false
+  }
+}
