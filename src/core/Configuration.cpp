@@ -1,4 +1,5 @@
 #include "core/Configuration.h"
+#include "core/IConfigurationObserver.hpp"
 #include "yaml-cpp/exceptions.h"
 #include "yaml-cpp/node/parse.h"
 
@@ -13,6 +14,7 @@
 #include <iostream>
 #include <mutex>
 #include <nlohmann/json.hpp>
+#include <shared_mutex>
 #include <stdexcept>
 #include <string>
 #include <thread>
@@ -259,7 +261,7 @@ void Configuration::load_from_args(int argc, char *argv[]) {
                 << "Please correct the configuration issues and restart the "
                    "applicaiton."
                 << std::endl;
-      exit(EXIT_FAILURE);
+      throw std::runtime_error("Configuration validation failed.");
     }
   } catch (const cxxopts::exceptions::exception &e) {
     throw std::runtime_error(
@@ -339,6 +341,81 @@ bool Configuration::validate() const {
   }
 
   return is_valid;
+}
+
+void Configuration::register_observer(IConfigurationObserver *observer) {
+  if (!observer) {
+    return;
+  }
+
+  std::unique_lock<std::shared_mutex> lock(config_mutex_);
+
+  if (std::find(observers_.begin(), observers_.end(), observer) ==
+      observers_.end()) {
+    observers_.push_back(observer);
+  }
+}
+
+void Configuration::reload() {
+  if (config_file_.empty()) {
+    std::cerr << "Configuration reload failed: No configuration file was "
+                 "previously loaded."
+              << std::endl;
+    return;
+  }
+
+  std::string file_to_reload = config_file_;
+
+  std::unique_lock<std::shared_mutex> lock(config_mutex_);
+
+  // Save current configuration in case validation fails
+  const uint16_t old_port = port_;
+  const size_t old_io_threads = io_threads_;
+  const size_t old_worker_threads = worker_threads_;
+  const bool old_enable_persistence = enable_persistence_;
+  const std::vector<std::string> old_instruments = instruments_;
+
+  try {
+    std::vector<IConfigurationObserver *> observers_copy = observers_;
+
+    load_from_file_(config_file_);
+
+    if (!validate()) {
+      port_ = old_port;
+      io_threads_ = old_io_threads;
+      worker_threads_ = old_worker_threads;
+      enable_persistence_ = old_enable_persistence;
+      instruments_ = old_instruments;
+
+      std::cerr << "Configuration reload failed: Validation errors found."
+                << std::endl;
+      std::cerr << "Reverting to previous valid configuration." << std::endl;
+    }
+
+    lock.unlock();
+
+    std::cout << "Configuration reloaded successfully from " << config_file_
+              << std::endl;
+
+    observers_copy = observers_;
+
+    for (auto &observer : observers_copy) {
+      if (observer) {
+        observer->on_configuration_reload();
+      }
+    }
+
+    return;
+  } catch (const std::exception &e) {
+    port_ = old_port;
+    io_threads_ = old_io_threads;
+    worker_threads_ = old_worker_threads;
+    enable_persistence_ = old_enable_persistence;
+    instruments_ = old_instruments;
+
+    std::cerr << "Configuration reload failed: " << e.what() << std::endl;
+    std::cerr << "Reverting to previous valid configuration." << std::endl;
+  }
 }
 
 } // namespace core

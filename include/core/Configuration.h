@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/IConfigurationObserver.hpp"
 #include <cstdint>
 #include <shared_mutex>
 #include <string>
@@ -89,6 +90,9 @@ public:
     std::shared_lock<std::shared_mutex> lock(config_mutex_);
     return instruments_;
   }
+
+  void reload();
+  void register_observer(IConfigurationObserver *observer);
 
 private:
   /**
@@ -189,6 +193,9 @@ private:
    * but updated rarely.
    */
   mutable std::shared_mutex config_mutex_;
+
+  std::vector<IConfigurationObserver *> observers_;
+  std::string config_file_path_;
 };
 
 } // namespace core

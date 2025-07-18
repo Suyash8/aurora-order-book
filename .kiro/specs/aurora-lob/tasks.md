@@ -20,7 +20,7 @@
     - Implement market statistics tracking
     - _Requirements: 2.6, 6.1, 6.5_
 
-- [ ] 3. Implement configuration management
+- [x] 3. Implement configuration management
 
   - [x] 3.1 Create Configuration class
 
@@ -32,7 +32,7 @@
     - Add support for overriding file configuration
     - Implement validation for configuration parameters
     - _Requirements: 8.2, 8.3_
-  - [ ] 3.3 Implement runtime configuration reloading
+  - [x] 3.3 Implement runtime configuration reloading
     - Add support for hot-reloading certain configuration parameters
     - Implement thread-safe configuration updates
     - _Requirements: 8.3, 8.4_
