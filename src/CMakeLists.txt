@@ -8,6 +8,7 @@ target_link_libraries(aurora_interface INTERFACE
     Boost::system
     Boost::thread
     yaml-cpp::yaml-cpp
+    cxxopts::cxxopts
     PkgConfig::GPERFTOOLS
 )
 

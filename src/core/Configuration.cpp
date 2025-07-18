@@ -6,6 +6,7 @@
 #include <cctype>
 #include <cstddef>
 #include <cstdint>
+#include <cxxopts.hpp>
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -174,22 +175,77 @@ void Configuration::load_from_yaml(const std::string &filename) {
 }
 
 void Configuration::load_from_args(int argc, char *argv[]) {
-  for (int i = 1; i < argc; ++i) {
-    std::string arg = argv[i];
+  try {
+    cxxopts::Options options(
+        "aurora-order-book",
+        "Aurora Order Book - High-performance matching engine");
 
-    if (arg == "--port" && i + 1 < argc) {
-      port_ = static_cast<uint16_t>(std::stoi(argv[++i]));
-    } else if (arg == "--io-threads" && i + 1 < argc) {
-      io_threads_ = static_cast<size_t>(std::stoi(argv[++i]));
-    } else if (arg == "--worker-threads" && i + 1 < argc) {
-      worker_threads_ = static_cast<size_t>(std::stoi(argv[++i]));
-    } else if (arg == "--enable-persistence") {
-      enable_persistence_ = true;
-    } else if (arg == "--disable-persistence") {
-      enable_persistence_ = false;
-    } else if (arg == "--config" && i + 1 < argc) {
-      load_from_file(argv[++i]);
+    options.add_options() //
+        ("p,port", "TCP server port for client connections",
+         cxxopts::value<uint16_t>()) //
+        ("i,io-threads", "Number of I/O threads for network operations",
+         cxxopts::value<size_t>()) //
+        ("w,worker-threads", "Number of worker threads for order processing",
+         cxxopts::value<size_t>())                           //
+        ("enable-persistence", "Enable state persistence")   //
+        ("disable-persistence", "Disable state persistence") //
+        ("c,config", "Path to configuration file (JSON or YAML)",
+         cxxopts::value<std::string>()) //
+        ("instruments", "Comma-separated list of supported instruments",
+         cxxopts::value<std::string>()) //
+        ("h,help", "Print usage information");
+
+    auto result = options.parse(argc, argv);
+
+    if (result.count("help")) {
+      std::cout << options.help() << std::endl;
+      return;
     }
+
+    if (result.count("config")) {
+      load_from_file(result["config"].as<std::string>());
+    }
+
+    // Override with command line values if specified
+    if (result.count("port")) {
+      port_ = result["port"].as<uint16_t>();
+    }
+
+    if (result.count("io-threads")) {
+      io_threads_ = result["io-threads"].as<size_t>();
+    }
+
+    if (result.count("worker-threads")) {
+      worker_threads_ = result["worker-threads"].as<size_t>();
+    }
+
+    if (result.count("enable-persistence")) {
+      enable_persistence_ = true;
+    }
+
+    if (result.count("disable-persistence")) {
+      enable_persistence_ = false;
+    }
+
+    if (result.count("instruments")) {
+      std::string instruments_str = result["instruments"].as<std::string>();
+      instruments_.clear();
+
+      // Parse comma-separated instrument list
+      size_t pos = 0;
+      while ((pos = instruments_str.find(',')) != std::string::npos) {
+        instruments_.push_back(instruments_str.substr(0, pos));
+        instruments_str.erase(0, pos + 1);
+      }
+
+      // Add the last instrument
+      if (!instruments_str.empty()) {
+        instruments_.push_back(instruments_str);
+      }
+    }
+  } catch (const cxxopts::exceptions::exception &e) {
+    throw std::runtime_error(
+        std::string("Error parsing command line options: ") + e.what());
   }
 }
 

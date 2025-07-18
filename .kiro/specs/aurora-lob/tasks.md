@@ -22,13 +22,13 @@
 
 - [ ] 3. Implement configuration management
 
-  - [ ] 3.1 Create Configuration class
+  - [x] 3.1 Create Configuration class
 
     - Implement singleton pattern for global access
     - Add support for loading from JSON/YAML files
     - _Requirements: 8.1, 8.3, 8.4_
 
-  - [ ] 3.2 Implement command-line argument parsing
+  - [x] 3.2 Implement command-line argument parsing
     - Add support for overriding file configuration
     - Implement validation for configuration parameters
     - _Requirements: 8.2, 8.3_
