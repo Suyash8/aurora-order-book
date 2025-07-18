@@ -118,6 +118,24 @@ private:
    */
   void load_from_yaml(const std::string &filename);
 
+  /**
+   * @brief Validate the current configuration
+   *
+   * Performs a comprehensive validation of all configuration parameters to
+   * ensure they meet system requirements and operational constraints. Includes
+   * checks for:
+   * - Port number is in valid range (1025-65535, avoiding privileged ports)
+   * - Thread counts are reasonable (non-zero for worker threads if used)
+   * - Persistence directory exists and is writable if persistence is enabled
+   * - At least one instrument is configured if required by the application
+   * - IO thread count is appropriate for the expected load
+   * - Any configured file paths exist and have appropriate permissions
+   *
+   * @return true if all validation checks pass, false otherwise
+   * @note Failed validations are logged with specific error messages
+   */
+  bool validate() const;
+
   /** @brief TCP server port number for client connections */
   uint16_t port_ = 8080;
 

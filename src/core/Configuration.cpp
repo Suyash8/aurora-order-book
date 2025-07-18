@@ -6,6 +6,7 @@
 #include <cctype>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <cxxopts.hpp>
 #include <exception>
 #include <fstream>
@@ -243,10 +244,92 @@ void Configuration::load_from_args(int argc, char *argv[]) {
         instruments_.push_back(instruments_str);
       }
     }
+
+    if (!validate()) {
+      std::cerr << "Configuration validation failed. "
+                << "Please correct the configuration issues and restart the "
+                   "applicaiton."
+                << std::endl;
+      exit(EXIT_FAILURE);
+    }
   } catch (const cxxopts::exceptions::exception &e) {
     throw std::runtime_error(
         std::string("Error parsing command line options: ") + e.what());
   }
+}
+
+bool Configuration::validate() const {
+  bool is_valid = true;
+
+  if (port_ <= 1024 || port_ > 65535) {
+    std::cerr
+        << "Configuration error: Port number must be between 1025 and 65535"
+        << std::endl;
+    is_valid = false;
+  }
+
+  if (io_threads_ == 0) {
+    std::cerr << "Configuration error: At least one IO thread is required"
+              << std::endl;
+    is_valid = false;
+  } else if (io_threads_ > 64) {
+    std::cerr << "Configuration warning: Very high IO thread count ("
+              << io_threads_ << ") may impact performance" << std::endl;
+  }
+
+  if (worker_threads_ == 0) {
+    std::cerr << "Configuration warning: No worker threads specified, using "
+                 "single-threaded processing"
+              << std::endl;
+  } else if (worker_threads_ > std::thread::hardware_concurrency() * 2) {
+    std::cerr << "Configuration warning: Worker thread count ("
+              << worker_threads_
+              << ") significantly exceeds hardware concurrency ("
+              << std::thread::hardware_concurrency() << ")" << std::endl;
+  }
+
+  if (instruments_.empty()) {
+    std::cerr << "Configuration error: No instruments specified" << std::endl;
+    is_valid = false;
+  }
+
+  if (enable_persistence_) {
+    std::string persistence_dir = "./data";
+
+    std::error_code ec;
+    if (!std::filesystem::exists(persistence_dir, ec) || ec) {
+      std::cerr << "Configuration error: Persistence directory does not exist: "
+                << persistence_dir << std::endl;
+      is_valid = false;
+    } else if (!std::filesystem::is_directory(persistence_dir, ec) || ec) {
+      std::cerr << "Configuration error: Persistence path is not a directory: "
+                << persistence_dir << std::endl;
+      is_valid = false;
+    } else {
+      // Test if directory is writable by creating a test file
+      std::string test_file = persistence_dir + "/write_test";
+      std::ofstream test_stream(test_file);
+      if (!test_stream) {
+        std::cerr
+            << "Configuration error: Persistence directory is not writable: "
+            << persistence_dir << std::endl;
+        is_valid = false;
+      } else {
+        // Clean up test file
+        test_stream.close();
+        std::filesystem::remove(test_file, ec);
+      }
+    }
+  }
+
+  if (!config_file_.empty()) {
+    if (!std::filesystem::exists(config_file_)) {
+      std::cerr << "Configuration warning: Config file no longer exists: "
+                << config_file_ << std::endl;
+    }
+  }
+
+  return is_valid;
 }
 
 } // namespace core
