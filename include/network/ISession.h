@@ -1,8 +1,6 @@
 #pragma once
 
-#include "DataTypes.h"
-
-#include <string>
+#include "core/DataTypes.h"
 
 namespace aurora {
 namespace network {
