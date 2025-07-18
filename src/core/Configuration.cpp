@@ -11,6 +11,7 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
+#include <mutex>
 #include <nlohmann/json.hpp>
 #include <stdexcept>
 #include <string>
@@ -49,9 +50,10 @@ bool has_extensions(const std::string &filename,
   return false;
 }
 
-void Configuration::load_from_file(const std::string &filename) {
+void Configuration::load_from_file_(const std::string &filename) {
   std::vector<std::string> yaml_extensions{"yml", "yaml"};
   std::vector<std::string> json_extensions{"json"};
+
   if (has_extensions(filename, yaml_extensions)) {
     load_from_yaml(filename);
   } else if (has_extensions(filename, json_extensions)) {
@@ -71,6 +73,11 @@ void Configuration::load_from_file(const std::string &filename) {
     throw std::runtime_error("File not any of accepted extensions: " +
                              extensions_str);
   }
+}
+
+void Configuration::load_from_file(const std::string &filename) {
+  std::unique_lock<std::shared_mutex> lock(config_mutex_);
+  load_from_file_(filename);
 }
 
 void Configuration::load_from_json(const std::string &filename) {
@@ -177,6 +184,8 @@ void Configuration::load_from_yaml(const std::string &filename) {
 
 void Configuration::load_from_args(int argc, char *argv[]) {
   try {
+    std::unique_lock<std::shared_mutex> lock(config_mutex_);
+
     cxxopts::Options options(
         "aurora-order-book",
         "Aurora Order Book - High-performance matching engine");
@@ -204,7 +213,7 @@ void Configuration::load_from_args(int argc, char *argv[]) {
     }
 
     if (result.count("config")) {
-      load_from_file(result["config"].as<std::string>());
+      load_from_file_(result["config"].as<std::string>());
     }
 
     // Override with command line values if specified
