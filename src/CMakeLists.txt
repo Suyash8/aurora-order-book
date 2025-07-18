@@ -1,12 +1,14 @@
 add_library(aurora_interface INTERFACE)
 target_include_directories(aurora_interface INTERFACE
     "${PROJECT_SOURCE_DIR}/include"
+    "${nlohmann_json_SOURCE_DIR}"
 )
 
 target_link_libraries(aurora_interface INTERFACE
     Boost::system
     Boost::thread
-    nlohmann_json::nlohmann_json
+    yaml-cpp::yaml-cpp
+    cxxopts::cxxopts
     PkgConfig::GPERFTOOLS
 )
 
