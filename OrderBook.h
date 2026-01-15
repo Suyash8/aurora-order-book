@@ -4,8 +4,10 @@
 #include "Order.h"
 
 class OrderBook {
-    std::vector<Order> orders;
+    std::vector<Order> asks;
+    std::vector<Order> bids;
 
 public:
     void addOrder(const Order& order);
+    void printInfo();
 };
