@@ -19,15 +19,34 @@ void OrderBook::printInfo() {
 }
 
 void OrderBook::match() {
-    if (bids.empty() || asks.empty()) return;
+    while (true) {
+        if (bids.empty() || asks.empty()) return;
 
-    size_t bestBid = 0, bestAsk = 0;
-    for (size_t i = 0; i < bids.size(); ++i)
-        if (bids[i].price > bids[bestBid].price) bestBid = i;
-    
-    for (size_t i = 0; i < asks.size(); ++i) 
-        if (asks[i].price < asks[bestAsk].price) bestAsk = i;
+        size_t bestBid = 0, bestAsk = 0;
+        for (size_t i = 0; i < bids.size(); ++i)
+            if (bids[i].price > bids[bestBid].price) bestBid = i;
+        
+        for (size_t i = 0; i < asks.size(); ++i) 
+            if (asks[i].price < asks[bestAsk].price) bestAsk = i;
 
-    if (bids[bestBid].price > asks[bestAsk].price)
+        if (bids[bestBid].price < asks[bestAsk].price) return;
+
         std::cout << "Match: Bid " << bids[bestBid].id << " vs Ask " << asks[bestAsk].id << std::endl;
+
+        int quantity = std::min(bids[bestBid].quantity, asks[bestAsk].quantity);
+
+        double executionPrice;
+        if (bids[bestBid].id < asks[bestAsk].id)
+            executionPrice = bids[bestBid].price;
+        else
+            executionPrice = asks[bestAsk].price;
+
+        std::cout << "Execute " << quantity << " shares @ $" << executionPrice << std::endl;
+
+        bids[bestBid].quantity -= quantity;
+        asks[bestAsk].quantity -= quantity;
+
+        if (bids[bestBid].quantity == 0) bids.erase(bids.begin() + bestBid);
+        if (asks[bestAsk].quantity == 0) asks.erase(asks.begin() + bestAsk);
+    }
 }
