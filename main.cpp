@@ -4,10 +4,14 @@
 int main() {
     OrderBook book;
     
-    book.addOrder(Order{1, 100, 10, OrderType::BUY});
-    book.addOrder(Order{2, 150, 5, OrderType::SELL});
-    book.addOrder(Order{3, 120, 20, OrderType::BUY});
+    book.addOrder(Order{1, 100, 100, OrderType::SELL});
+    book.addOrder(Order{2, 101, 50, OrderType::SELL});
+    book.addOrder(Order{3, 120, 102, OrderType::BUY});
 
-    std::cout << "3 orderes added." << std::endl;
+    std::cout << std::endl;
+
+    book.printInfo();
+
+    book.match();
     return 0;
 }
