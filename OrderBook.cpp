@@ -1,13 +1,13 @@
+#include <algorithm>
 #include <iostream>
 
 #include "OrderBook.h"
 
 void OrderBook::addOrder(const Order& order) {
-    if (order.type == OrderType::BUY) {
+    if (order.type == OrderType::BUY)
         bids.push_back(order);
-    } else {
+    else
         asks.push_back(order);
-    }
 
     std::cout << "Order " << order.id << " added" << std::endl;
 }
@@ -49,4 +49,22 @@ void OrderBook::match() {
         if (bids[bestBid].quantity == 0) bids.erase(bids.begin() + bestBid);
         if (asks[bestAsk].quantity == 0) asks.erase(asks.begin() + bestAsk);
     }
+}
+
+bool OrderBook::cancelOrder(int orderId) {
+    if (bids.empty() && asks.empty()) return false;
+
+    auto it = std::find_if(bids.begin(), bids.end(), [orderId](const auto& order){ return order.id == orderId; });
+    if (it != bids.end()) {
+        bids.erase(it);
+        return true;
+    }
+
+    it = std::find_if(asks.begin(), asks.end(), [orderId](const auto& order){ return order.id == orderId; });
+    if (it != asks.end()) {
+        asks.erase(it);
+        return true;
+    }
+
+    return false;
 }

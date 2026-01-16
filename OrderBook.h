@@ -11,4 +11,5 @@ public:
     void addOrder(const Order& order);
     void printInfo();
     void match();
+    bool cancelOrder(int orderId);
 };
