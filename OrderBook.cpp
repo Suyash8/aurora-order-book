@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "OrderBook.h"
+#include "Limit.h"
 
 template<typename Comparator>
 void insertIntoLimitMap(std::map<double, Limit, Comparator>& limitMap, Order order) {
@@ -57,22 +58,19 @@ void OrderBook::match() {
     }
 }
 
+template<typename Comparator>
+bool cancelOrderFromLimitMap(std::map<double, Limit, Comparator>& limitMap, int orderId) {
+    for (auto& [price, limit] : limitMap) {
+        if (limit.deleteOrder(orderId)) {
+            if (limit.isEmpty()) limitMap.erase(price);
+            return true;
+        }
+    }
+    return false;
+}
+
 bool OrderBook::cancelOrder(int orderId) {
-    #if 0
-    if (bids.empty() && asks.empty()) return false;
-
-    auto it = std::find_if(bids.begin(), bids.end(), [orderId](const auto& order){ return order.id == orderId; });
-    if (it != bids.end()) {
-        bids.erase(it);
-        return true;
-    }
-
-    it = std::find_if(asks.begin(), asks.end(), [orderId](const auto& order){ return order.id == orderId; });
-    if (it != asks.end()) {
-        asks.erase(it);
-        return true;
-    }
-    #endif
-
+    if (cancelOrderFromLimitMap(bids, orderId)) return true;
+    if (cancelOrderFromLimitMap(asks, orderId)) return true;
     return false;
 }

@@ -19,8 +19,7 @@ int main() {
 
     book.match();
     book.printInfo();
-    #if 0
-    std::cout << "Order 2 " << (book.cancelOrder(2) ? "" : "not ") << "cancelled" << std::endl;
+    std::cout << "Order 4 " << (book.cancelOrder(4) ? "" : "not ") << "cancelled" << std::endl;
     book.printInfo();
 
     Limit lim(100);
@@ -30,7 +29,6 @@ int main() {
     lim.addOrder(ord2);
 
     std::cout << "\nLimit 100.0 | Total Volume: " << lim.getTotalVolume() << std::endl;
-    #endif
 
     return 0;
 }

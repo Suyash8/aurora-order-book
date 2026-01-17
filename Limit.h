@@ -16,4 +16,5 @@ public:
     bool isEmpty() const { return orders.empty(); }
 
     void addOrder(const Order& order);
+    bool deleteOrder(int orderId);
 };
