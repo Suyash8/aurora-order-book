@@ -3,11 +3,17 @@
 
 #include "OrderBook.h"
 
+template<typename Comparator>
+void insertIntoLimitMap(std::map<double, Limit, Comparator>& limitMap, Order order) {
+    auto it = limitMap.emplace(order.price, Limit(order.price)).first;
+    it->second.addOrder(order);
+}
+
 void OrderBook::addOrder(const Order& order) {
     if (order.type == OrderType::BUY)
-        bids.push_back(order);
+        insertIntoLimitMap(bids, order);
     else
-        asks.push_back(order);
+        insertIntoLimitMap(asks, order);
 
     std::cout << "Order " << order.id << " added" << std::endl;
 }
@@ -19,6 +25,7 @@ void OrderBook::printInfo() {
 }
 
 void OrderBook::match() {
+    #if 0
     while (true) {
         if (bids.empty() || asks.empty()) return;
 
@@ -49,9 +56,11 @@ void OrderBook::match() {
         if (bids[bestBid].quantity == 0) bids.erase(bids.begin() + bestBid);
         if (asks[bestAsk].quantity == 0) asks.erase(asks.begin() + bestAsk);
     }
+    #endif
 }
 
 bool OrderBook::cancelOrder(int orderId) {
+    #if 0
     if (bids.empty() && asks.empty()) return false;
 
     auto it = std::find_if(bids.begin(), bids.end(), [orderId](const auto& order){ return order.id == orderId; });
@@ -65,6 +74,7 @@ bool OrderBook::cancelOrder(int orderId) {
         asks.erase(it);
         return true;
     }
+    #endif
 
     return false;
 }

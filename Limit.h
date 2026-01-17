@@ -13,5 +13,5 @@ public:
     double getPrice() const { return price; }
     double getTotalVolume() const { return totalVolume; }
 
-    void addOrder(Order& order);
+    void addOrder(const Order& order);
 };

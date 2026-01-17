@@ -9,10 +9,15 @@ int main() {
     book.addOrder(Order{1, 100, 100, OrderType::SELL});
     book.addOrder(Order{2, 101, 50, OrderType::SELL});
     book.addOrder(Order{3, 120, 102, OrderType::BUY});
+    book.addOrder(Order{4, 119, 150, OrderType::BUY});
+    book.addOrder(Order{5, 100, 150, OrderType::BUY});
+    book.addOrder(Order{6, 102, 75, OrderType::SELL});
 
     std::cout << std::endl;
 
     book.printInfo();
+
+    #if 0
     book.match();
     book.printInfo();
     std::cout << "Order 2 " << (book.cancelOrder(2) ? "" : "not ") << "cancelled" << std::endl;
@@ -25,6 +30,7 @@ int main() {
     lim.addOrder(ord2);
 
     std::cout << "\nLimit 100.0 | Total Volume: " << lim.getTotalVolume() << std::endl;
+    #endif
 
     return 0;
 }
