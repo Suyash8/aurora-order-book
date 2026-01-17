@@ -25,38 +25,36 @@ void OrderBook::printInfo() {
 }
 
 void OrderBook::match() {
-    #if 0
     while (true) {
-        if (bids.empty() || asks.empty()) return;
+        if (bids.empty() || asks.empty()) break;
 
-        size_t bestBid = 0, bestAsk = 0;
-        for (size_t i = 0; i < bids.size(); ++i)
-            if (bids[i].price > bids[bestBid].price) bestBid = i;
-        
-        for (size_t i = 0; i < asks.size(); ++i) 
-            if (asks[i].price < asks[bestAsk].price) bestAsk = i;
+        auto& bestBidLimit = bids.begin()->second;
+        auto& bestAskLimit = asks.begin()->second;
 
-        if (bids[bestBid].price < asks[bestAsk].price) return;
+        if (bids.begin()->first < asks.begin()->first) break;
 
-        std::cout << "Match: Bid " << bids[bestBid].id << " vs Ask " << asks[bestAsk].id << std::endl;
+        Order& bestBid = bestBidLimit.getOrders().front();
+        Order& bestAsk = bestAskLimit.getOrders().front();
 
-        int quantity = std::min(bids[bestBid].quantity, asks[bestAsk].quantity);
+        int quantity = std::min(bestBid.quantity, bestAsk.quantity);
 
         double executionPrice;
-        if (bids[bestBid].id < asks[bestAsk].id)
-            executionPrice = bids[bestBid].price;
+        if (bestBid.id < bestAsk.id)
+            executionPrice = bestBid.price;
         else
-            executionPrice = asks[bestAsk].price;
+            executionPrice = bestAsk.price;
 
         std::cout << "Execute " << quantity << " shares @ $" << executionPrice << std::endl;
 
-        bids[bestBid].quantity -= quantity;
-        asks[bestAsk].quantity -= quantity;
+        bestBid.quantity -= quantity;
+        bestAsk.quantity -= quantity;
 
-        if (bids[bestBid].quantity == 0) bids.erase(bids.begin() + bestBid);
-        if (asks[bestAsk].quantity == 0) asks.erase(asks.begin() + bestAsk);
+        if (bestBid.quantity == 0) bestBidLimit.getOrders().erase(bestBidLimit.getOrders().begin());
+        if (bestAsk.quantity == 0) bestAskLimit.getOrders().erase(bestAskLimit.getOrders().begin());
+
+        if (bestBidLimit.isEmpty()) bids.erase(bids.begin());
+        if (bestAskLimit.isEmpty()) asks.erase(asks.begin());
     }
-    #endif
 }
 
 bool OrderBook::cancelOrder(int orderId) {

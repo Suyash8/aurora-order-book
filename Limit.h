@@ -12,6 +12,8 @@ public:
     Limit(double limit_price) : price(limit_price), totalVolume(0) {}
     double getPrice() const { return price; }
     double getTotalVolume() const { return totalVolume; }
+    std::vector<Order>& getOrders() { return orders; }
+    bool isEmpty() const { return orders.empty(); }
 
     void addOrder(const Order& order);
 };

@@ -17,9 +17,9 @@ int main() {
 
     book.printInfo();
 
-    #if 0
     book.match();
     book.printInfo();
+    #if 0
     std::cout << "Order 2 " << (book.cancelOrder(2) ? "" : "not ") << "cancelled" << std::endl;
     book.printInfo();
 
