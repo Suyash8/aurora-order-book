@@ -1,5 +1,7 @@
 #include <iostream>
+
 #include "OrderBook.h"
+#include "Limit.h"
 
 int main() {
     OrderBook book;
@@ -15,5 +17,14 @@ int main() {
     book.printInfo();
     std::cout << "Order 2 " << (book.cancelOrder(2) ? "" : "not ") << "cancelled" << std::endl;
     book.printInfo();
+
+    Limit lim(100);
+    Order ord1{4, 100, 200, OrderType::BUY};
+    Order ord2{5, 100, 150, OrderType::SELL};
+    lim.addOrder(ord1);
+    lim.addOrder(ord2);
+
+    std::cout << "\nLimit 100.0 | Total Volume: " << lim.getTotalVolume() << std::endl;
+
     return 0;
 }
