@@ -4,10 +4,11 @@
 #include "Order.h"
 #include "Limit.h"
 
-void Limit::addOrder(const Order& order) {
+std::list<Order>::iterator Limit::addOrder(const Order& order) {
     if (order.price != price) throw std::invalid_argument("Order price does not match limit price");
     orders.push_back(order);
     totalVolume += order.quantity;
+    return --orders.end();
 }
 
 bool Limit::deleteOrder(int orderId) {

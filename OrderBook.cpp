@@ -1,22 +1,21 @@
 #include <algorithm>
 #include <iostream>
+#include <list>
 
 #include "OrderBook.h"
 #include "Limit.h"
 
 template<typename Comparator>
-void insertIntoLimitMap(std::map<double, Limit, Comparator>& limitMap, Order order) {
+void insertIntoLimitMap(std::map<double, Limit, Comparator>& limitMap, Order order, std::unordered_map<int, OrderEntry>& orderLookup) {
     auto it = limitMap.emplace(order.price, Limit(order.price)).first;
-    it->second.addOrder(order);
+    orderLookup[order.id] = {it->second.addOrder(order), &(it->second)};
 }
 
 void OrderBook::addOrder(const Order& order) {
     if (order.type == OrderType::BUY)
-        insertIntoLimitMap(bids, order);
+        insertIntoLimitMap(bids, order, orderLookup);
     else
-        insertIntoLimitMap(asks, order);
-
-    std::cout << "Order " << order.id << " added" << std::endl;
+        insertIntoLimitMap(asks, order, orderLookup);
 }
 
 void OrderBook::printInfo() {

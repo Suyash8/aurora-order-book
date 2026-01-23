@@ -15,6 +15,6 @@ public:
     std::list<Order>& getOrders() { return orders; }
     bool isEmpty() const { return orders.empty(); }
 
-    void addOrder(const Order& order);
+    std::list<Order>::iterator addOrder(const Order& order);
     bool deleteOrder(int orderId);
 };
