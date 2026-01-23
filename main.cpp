@@ -2,6 +2,7 @@
 
 #include "OrderBook.h"
 #include "Limit.h"
+#include "Order.h"
 
 int main() {
     OrderBook book;

@@ -1,9 +1,12 @@
 #include <algorithm>
 #include <iostream>
 #include <list>
+#include <map>
+#include <unordered_map>
 
 #include "OrderBook.h"
 #include "Limit.h"
+#include "Order.h"
 
 template<typename Comparator>
 void insertIntoLimitMap(std::map<double, Limit, Comparator>& limitMap, Order order, std::unordered_map<int, OrderEntry>& orderLookup) {
@@ -56,23 +59,6 @@ void OrderBook::match() {
         if (bestAskLimit.isEmpty()) asks.erase(asks.begin());
     }
 }
-
-template<typename Comparator>
-bool cancelOrderFromLimitMap(std::map<double, Limit, Comparator>& limitMap, int orderId) {
-    for (auto& [price, limit] : limitMap) {
-        if (limit.deleteOrder(orderId)) {
-            if (limit.isEmpty()) limitMap.erase(price);
-            return true;
-        }
-    }
-    return false;
-}
-
-// bool OrderBook::cancelOrder(int orderId) {
-//     if (cancelOrderFromLimitMap(bids, orderId)) return true;
-//     if (cancelOrderFromLimitMap(asks, orderId)) return true;
-//     return false;
-// }
 
 bool OrderBook::cancelOrder(int orderId) {
     if (!orderLookup.count(orderId)) return false;
