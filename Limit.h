@@ -17,4 +17,5 @@ public:
 
     std::list<Order>::iterator addOrder(const Order& order);
     bool deleteOrder(int orderId);
+    void eraseOrder(std::list<Order>::iterator it);
 };

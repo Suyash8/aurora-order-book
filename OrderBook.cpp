@@ -68,8 +68,27 @@ bool cancelOrderFromLimitMap(std::map<double, Limit, Comparator>& limitMap, int 
     return false;
 }
 
+// bool OrderBook::cancelOrder(int orderId) {
+//     if (cancelOrderFromLimitMap(bids, orderId)) return true;
+//     if (cancelOrderFromLimitMap(asks, orderId)) return true;
+//     return false;
+// }
+
 bool OrderBook::cancelOrder(int orderId) {
-    if (cancelOrderFromLimitMap(bids, orderId)) return true;
-    if (cancelOrderFromLimitMap(asks, orderId)) return true;
-    return false;
+    if (!orderLookup.count(orderId)) return false;
+
+    auto& entry = orderLookup[orderId];
+    Limit* parent = entry.parentLimit;
+    auto it = entry.orderIterator;
+
+    parent->eraseOrder(it);
+
+    orderLookup.erase(orderId);
+    if (parent->isEmpty()) {
+        if (bids.count(parent->getPrice()))
+            bids.erase(parent->getPrice());
+        else
+            asks.erase(parent->getPrice());
+    }
+    return true;
 }

@@ -1,3 +1,4 @@
+#include <list>
 #include <vector>
 #include <stdexcept>
 
@@ -20,4 +21,9 @@ bool Limit::deleteOrder(int orderId) {
         }
     }
     return false;
+}
+
+void Limit::eraseOrder(std::list<Order>::iterator it) {
+    totalVolume -= it->quantity;
+    orders.erase(it);
 }
