@@ -1,15 +1,24 @@
 #include <algorithm>
 #include <iostream>
+#include <list>
+#include <map>
+#include <unordered_map>
 
 #include "OrderBook.h"
+#include "Limit.h"
+#include "Order.h"
+
+template<typename Comparator>
+void insertIntoLimitMap(std::map<double, Limit, Comparator>& limitMap, Order order, std::unordered_map<int, OrderEntry>& orderLookup) {
+    auto it = limitMap.emplace(order.price, Limit(order.price)).first;
+    orderLookup[order.id] = {it->second.addOrder(order), &(it->second)};
+}
 
 void OrderBook::addOrder(const Order& order) {
     if (order.type == OrderType::BUY)
-        bids.push_back(order);
+        insertIntoLimitMap(bids, order, orderLookup);
     else
-        asks.push_back(order);
-
-    std::cout << "Order " << order.id << " added" << std::endl;
+        insertIntoLimitMap(asks, order, orderLookup);
 }
 
 void OrderBook::printInfo() {
@@ -20,51 +29,52 @@ void OrderBook::printInfo() {
 
 void OrderBook::match() {
     while (true) {
-        if (bids.empty() || asks.empty()) return;
+        if (bids.empty() || asks.empty()) break;
 
-        size_t bestBid = 0, bestAsk = 0;
-        for (size_t i = 0; i < bids.size(); ++i)
-            if (bids[i].price > bids[bestBid].price) bestBid = i;
-        
-        for (size_t i = 0; i < asks.size(); ++i) 
-            if (asks[i].price < asks[bestAsk].price) bestAsk = i;
+        auto& bestBidLimit = bids.begin()->second;
+        auto& bestAskLimit = asks.begin()->second;
 
-        if (bids[bestBid].price < asks[bestAsk].price) return;
+        if (bids.begin()->first < asks.begin()->first) break;
 
-        std::cout << "Match: Bid " << bids[bestBid].id << " vs Ask " << asks[bestAsk].id << std::endl;
+        Order& bestBid = bestBidLimit.getOrders().front();
+        Order& bestAsk = bestAskLimit.getOrders().front();
 
-        int quantity = std::min(bids[bestBid].quantity, asks[bestAsk].quantity);
+        int quantity = std::min(bestBid.quantity, bestAsk.quantity);
 
         double executionPrice;
-        if (bids[bestBid].id < asks[bestAsk].id)
-            executionPrice = bids[bestBid].price;
+        if (bestBid.id < bestAsk.id)
+            executionPrice = bestBid.price;
         else
-            executionPrice = asks[bestAsk].price;
+            executionPrice = bestAsk.price;
 
         std::cout << "Execute " << quantity << " shares @ $" << executionPrice << std::endl;
 
-        bids[bestBid].quantity -= quantity;
-        asks[bestAsk].quantity -= quantity;
+        bestBid.quantity -= quantity;
+        bestAsk.quantity -= quantity;
 
-        if (bids[bestBid].quantity == 0) bids.erase(bids.begin() + bestBid);
-        if (asks[bestAsk].quantity == 0) asks.erase(asks.begin() + bestAsk);
+        if (bestBid.quantity == 0) bestBidLimit.getOrders().erase(bestBidLimit.getOrders().begin());
+        if (bestAsk.quantity == 0) bestAskLimit.getOrders().erase(bestAskLimit.getOrders().begin());
+
+        if (bestBidLimit.isEmpty()) bids.erase(bids.begin());
+        if (bestAskLimit.isEmpty()) asks.erase(asks.begin());
     }
 }
 
 bool OrderBook::cancelOrder(int orderId) {
-    if (bids.empty() && asks.empty()) return false;
+    if (!orderLookup.count(orderId)) return false;
 
-    auto it = std::find_if(bids.begin(), bids.end(), [orderId](const auto& order){ return order.id == orderId; });
-    if (it != bids.end()) {
-        bids.erase(it);
-        return true;
+    auto& entry = orderLookup[orderId];
+    Limit* parent = entry.parentLimit;
+    auto it = entry.orderIterator;
+
+    parent->eraseOrder(it);
+
+    orderLookup.erase(orderId);
+    if (parent->isEmpty()) {
+        if (bids.count(parent->getPrice()))
+            bids.erase(parent->getPrice());
+        else
+            asks.erase(parent->getPrice());
     }
-
-    it = std::find_if(asks.begin(), asks.end(), [orderId](const auto& order){ return order.id == orderId; });
-    if (it != asks.end()) {
-        asks.erase(it);
-        return true;
-    }
-
-    return false;
+    return true;
 }

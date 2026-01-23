@@ -2,6 +2,7 @@
 
 #include "OrderBook.h"
 #include "Limit.h"
+#include "Order.h"
 
 int main() {
     OrderBook book;
@@ -9,13 +10,17 @@ int main() {
     book.addOrder(Order{1, 100, 100, OrderType::SELL});
     book.addOrder(Order{2, 101, 50, OrderType::SELL});
     book.addOrder(Order{3, 120, 102, OrderType::BUY});
+    book.addOrder(Order{4, 119, 150, OrderType::BUY});
+    book.addOrder(Order{5, 100, 150, OrderType::BUY});
+    book.addOrder(Order{6, 102, 75, OrderType::SELL});
 
     std::cout << std::endl;
 
     book.printInfo();
+
     book.match();
     book.printInfo();
-    std::cout << "Order 2 " << (book.cancelOrder(2) ? "" : "not ") << "cancelled" << std::endl;
+    std::cout << "Order 4 " << (book.cancelOrder(4) ? "" : "not ") << "cancelled" << std::endl;
     book.printInfo();
 
     Limit lim(100);
