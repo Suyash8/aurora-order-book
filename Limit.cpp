@@ -11,7 +11,7 @@ void Limit::addOrder(const Order& order) {
 }
 
 bool Limit::deleteOrder(int orderId) {
-    for (auto it = orders.begin(); it < orders.end(); ++it) {
+    for (auto it = orders.begin(); it != orders.end(); ++it) {
         if (it->id == orderId) {
             totalVolume -= it->quantity;
             orders.erase(it);
